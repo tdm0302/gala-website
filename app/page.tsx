@@ -8,10 +8,19 @@ import {
   Clock3,
   MapPin,
   ChevronDown,
+  ArrowRight,
   Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+
+const galaCountdownTarget = new Date(2026, 3, 25, 18, 0, 0);
+const venueName = "Durham Convention Centre";
+const venueAddress = "630 Beck Crescent, Ajax, Ontario";
+const venueSearchQuery = "Durham Convention Centre Ajax Ontario";
+const venueLatitude = "43.945062";
+const venueLongitude = "-78.895891";
+const venueDirectionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(venueSearchQuery)}&travelmode=driving`;
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -163,99 +172,178 @@ function InfoPill({ icon: Icon, label, value }: { icon: React.ComponentType<any>
   );
 }
 
-function AwardsVotingPage() {
-  const awardCards = [
-    {
-      title: "BITSoc Awards",
-      text: "Cast your vote & Nominate for Professor, TA, and Association of the Year in FBIT, recognizing those who have demonstrated outstanding leadership, initiative, and impact throughout the year.",
-      button: "Vote for BITSoc Awards",
-      links: [
-        {
-          label: "Vote for BITSoc Awards",
-          href: "https://docs.google.com/forms/d/e/1FAIpQLSeGf-Svw4F7qAuD8RaLM-KpBntvXp3Gi7eJ4IG5FYl6yU9kWg/viewform?usp=dialog",
-        },
-      ],
-      accent: "from-amber-300/20 via-amber-100/5 to-transparent",
-    },
-    {
-      title: "SciCo Awards",
-      text: "Recognize Science students for scholarships who made a meaningful contribution through excellence, dedication, and community involvement, along with the professor of the year.",
-      button: "Vote for SciCo Awards",
-      links: [
-        {
-          label: "Professor Award Nomination",
-          href: "https://docs.google.com/forms/d/e/1FAIpQLSdyLc0HJ15nAtsPWmiR4aXa_OC1bXbYxauJvtKt_FDBSnxs6g/viewform",
-        },
-        {
-          label: "Scholarship Award",
-          href: "https://docs.google.com/forms/d/e/1FAIpQLSfVshLGcv0Eo5QT4QnNW3GIY8HfCQhYskUb6n2vBMeZH62Llg/viewform",
-        },
-      ],
-      accent: "from-sky-300/20 via-sky-100/5 to-transparent",
-    },
+function CountdownTimer() {
+  const [timeLeft, setTimeLeft] = React.useState(() => getTimeLeft());
+
+  React.useEffect(() => {
+    const timer = window.setInterval(() => {
+      setTimeLeft(getTimeLeft());
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const timeBlocks = [
+    { label: "Days", value: timeLeft.days },
+    { label: "Hours", value: timeLeft.hours },
+    { label: "Mins", value: timeLeft.minutes },
+    { label: "Secs", value: timeLeft.seconds },
   ];
 
   return (
-    <section id="vote" className="mx-auto max-w-7xl px-6 py-20 md:px-10">
-      <SectionHeading
-        eyebrow="Cast Your Vote"
-        title={
-          <>
-            Cast Your Vote. Celebrate <span className="bg-gradient-to-b from-amber-100 via-amber-200 to-amber-400 bg-clip-text text-transparent">Excellence</span>.
-          </>
-        }
-        text="Choose your award category below and help spotlight thoese who made the biggest impact this year."
-      />
+    <div className="mx-auto mt-8 max-w-4xl">
+      <p className="text-sm uppercase tracking-[0.35em] text-amber-200/80 md:text-base">
+        The Biggest Night in Ontario Tech History Starts In...
+      </p>
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {timeBlocks.map((block) => (
+          <div key={block.label} className="rounded-3xl border border-white/10 bg-white/5 px-4 py-5 text-center backdrop-blur-md">
+            <p className="text-3xl font-semibold text-amber-300 md:text-4xl">{formatCountdownValue(block.value)}</p>
+            <p className="mt-2 text-[10px] uppercase tracking-[0.35em] text-neutral-400">{block.label}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
-      <motion.div
-        variants={stagger}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.15 }}
-        className="mt-12 grid gap-6 lg:grid-cols-2"
-      >
-        {awardCards.map((card) => (
-          <motion.div key={card.title} variants={fadeUp} transition={{ duration: 0.45 }} className="h-full">
-            <Card className="flex h-full flex-col overflow-hidden rounded-[2rem] border-white/10 bg-black/40 text-white">
-              <div className={`relative aspect-[16/10] border-b border-white/10 bg-gradient-to-br ${card.accent}`}>
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.35))]" />
-                <div className="absolute inset-0 flex items-end p-6">
-                  <div>
-                    <p className="text-[10px] uppercase tracking-[0.35em] text-neutral-300">Society Recognition</p>
-                    <p className="mt-3 text-3xl font-semibold">{card.title}</p>
-                  </div>
+function VenueDirectionsSection() {
+  const [startingAddress, setStartingAddress] = React.useState("");
+
+  function handleDirectionsSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const trimmedAddress = startingAddress.trim();
+    const destination = encodeURIComponent(venueSearchQuery);
+
+    if (!trimmedAddress) {
+      window.open(venueDirectionsUrl, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    const origin = encodeURIComponent(trimmedAddress);
+    window.open(
+      `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+  }
+
+  function handleUberBooking() {
+    const trimmedAddress = startingAddress.trim();
+    if (!trimmedAddress) {
+      return;
+    }
+
+    const uberUrl = new URL("https://m.uber.com/go/pickup");
+    uberUrl.searchParams.set("pickup[formatted_address]", trimmedAddress);
+    uberUrl.searchParams.set("pickup[nickname]", "Pickup location");
+    uberUrl.searchParams.set("dropoff[formatted_address]", venueAddress);
+    uberUrl.searchParams.set("dropoff[nickname]", venueName);
+    uberUrl.searchParams.set("dropoff[latitude]", venueLatitude);
+    uberUrl.searchParams.set("dropoff[longitude]", venueLongitude);
+
+    window.open(uberUrl.toString(), "_blank", "noopener,noreferrer");
+  }
+
+  return (
+    <section id="venue" className="border-y border-white/10 bg-white/[0.03]">
+      <div className="mx-auto max-w-[88rem] px-6 py-20 md:px-10">
+        <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.5 }}>
+            <div className="px-2 py-2 text-white">
+              <div>
+                <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Getting to the Venue</p>
+                <h2 className="mt-4 max-w-none text-4xl font-semibold md:text-5xl xl:text-6xl">
+                  Find Your Way to <span className="bg-gradient-to-b from-amber-100 via-amber-200 to-amber-400 bg-clip-text text-transparent">{venueName}</span>.
+                </h2>
+                <p className="mt-5 max-w-2xl text-base leading-8 text-neutral-300 md:text-lg">
+                  Enter a starting address and we’ll open Google Maps with the route to the gala venue.
+                </p>
+              </div>
+
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+                  <p className="text-[10px] uppercase tracking-[0.35em] text-amber-200/70">Venue</p>
+                  <p className="mt-3 text-lg font-medium text-white"><a href="https://maps.app.goo.gl/M1MF951QBjapjHG97" target="_blank" rel="noopener noreferrer" className="text-inherit no-underline transition hover:text-amber-200">{venueName}</a></p>
+                  <p className="mt-2 text-sm leading-7 text-neutral-300">{venueAddress}</p>
+                </div>
+                <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur">
+                  <p className="text-[10px] uppercase tracking-[0.35em] text-amber-200/70">Map Access</p>
+                  <a
+                    href={venueDirectionsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex text-lg font-medium text-white no-underline transition hover:text-amber-200"
+                  >
+                    Open in Google Maps
+                  </a>
+                  <p className="mt-2 text-sm leading-7 text-neutral-300">Tap to view the location directly in Maps.</p>
                 </div>
               </div>
-              <CardContent className="flex flex-1 flex-col p-6">
-                <p className="flex-1 text-sm leading-7 text-neutral-300">{card.text}</p>
-                {card.links?.length && card.links.length > 1 ? (
-                  <div className="mt-6 flex w-full flex-col gap-3">
-                    {card.links.map((link) => (
-                      <Button key={link.href} asChild className="w-full justify-center rounded-2xl bg-amber-300 py-6 text-black hover:bg-amber-200">
-                        <a href={link.href} target="_blank" rel="noopener noreferrer">{link.label}</a>
-                      </Button>
-                    ))}
-                  </div>
-                ) : card.links?.length === 1 ? (
-                  <Button asChild className="mx-auto mt-6 w-full max-w-xl justify-center rounded-2xl bg-amber-300 py-6 text-black hover:bg-amber-200">
-                    <a href={card.links[0].href} target="_blank" rel="noopener noreferrer">{card.links[0].label}</a>
-                  </Button>
-                ) : (
-                  <Button
-                    disabled
-                    className="mt-6 w-full cursor-not-allowed justify-center rounded-2xl bg-amber-300 py-6 text-black opacity-60 hover:bg-amber-300"
-                    title="Voting forms are not live yet"
-                  >
-                    {card.button}
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
+            </div>
           </motion.div>
-        ))}
-      </motion.div>
+
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.5 }}>
+            <div className="flex h-full flex-col px-2 py-2 text-white">
+              <div>
+                <div className="relative aspect-[16/10] overflow-hidden rounded-[1.2rem] border border-white/10">
+                  <iframe
+                    title="Durham Convention Centre map"
+                    src={`https://www.google.com/maps?q=${encodeURIComponent(venueSearchQuery)}&output=embed`}
+                    className="h-full w-full border-0"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+              </div>
+
+              <form onSubmit={handleDirectionsSubmit} className="mt-6">
+                <label htmlFor="starting-address" className="text-xs uppercase tracking-[0.35em] text-amber-200/70">
+                  Starting address
+                </label>
+                <input
+                  id="starting-address"
+                  type="text"
+                  value={startingAddress}
+                  onChange={(event) => setStartingAddress(event.target.value)}
+                  placeholder="Enter your starting address"
+                  className="mt-3 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-white outline-none transition placeholder:text-neutral-500 focus:border-amber-300/50 focus:bg-white/8"
+                />
+                <Button type="submit" className="mt-4 w-full rounded-2xl bg-amber-300 py-6 text-sm uppercase tracking-[0.24em] text-black hover:bg-amber-200">
+                  Get Directions
+                </Button>
+                <Button
+                  type="button"
+                  onClick={handleUberBooking}
+                  disabled={!startingAddress.trim()}
+                  className="mt-3 w-full rounded-2xl border border-white/15 bg-white/5 py-6 text-sm uppercase tracking-[0.24em] text-white hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Book Uber to Venue
+                </Button>
+              </form>
+            </div>
+          </motion.div>
+        </div>
+      </div>
     </section>
   );
+}
+
+function getTimeLeft() {
+  const now = new Date().getTime();
+  const distance = Math.max(galaCountdownTarget.getTime() - now, 0);
+
+  return {
+    days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((distance / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((distance / 1000 / 60) % 60),
+    seconds: Math.floor((distance / 1000) % 60),
+  };
+}
+
+function formatCountdownValue(value: number) {
+  return String(value).padStart(2, "0");
 }
 
 function PresidentsMessagesPage() {
@@ -329,9 +417,9 @@ export default function ANightInMonteCarloSite() {
           <nav className="hidden items-center gap-6 text-md text-neutral-300 lg:flex">
             <a href="#about" className="transition hover:text-amber-200">About</a>
             <a href="#tickets" className="transition hover:text-amber-200">Tickets</a>
+            <a href="#venue" className="transition hover:text-amber-200">Directions</a>
             <a href="#program" className="transition hover:text-amber-200">Program</a>
             <a href="#awards" className="transition hover:text-amber-200">Awards</a>
-            <a href="#vote" className="transition hover:text-amber-200">Vote</a>
             <a href="#faq" className="transition hover:text-amber-200">FAQ</a>
           </nav>
           <Button asChild className="rounded-xl bg-amber-300 px-8 py-6 text-base text-black hover:bg-amber-200">
@@ -354,16 +442,13 @@ export default function ANightInMonteCarloSite() {
                     Monte Carlo
                   </span>
                 </h1>
-                <p className="mx-auto mt-8 max-w-3xl text-base leading-8 text-neutral-300 md:text-lg">
-                  A cinematic gala experience inspired by Riviera glamour, presented by the Business & IT Society & Science Council, featuring a styled buffet dinner, awards,
-                  signature drinks, photo moments, entertainment, and a polished after-dark finale.
-                </p>
+                <CountdownTimer />
                 <div className="mt-10 flex flex-wrap justify-center gap-4">
                   <Button asChild className="rounded-2xl bg-amber-300 px-6 py-6 text-sm uppercase tracking-[0.24em] text-black hover:bg-amber-200">
                     <a href="https://shop.otubitsoc.com">Buy Tickets</a>
                   </Button>
                   <Button asChild variant="outline" className="rounded-2xl border-white/15 bg-white/5 px-6 py-6 text-sm uppercase tracking-[0.24em] text-white hover:bg-white/10 hover:text-white">
-                    <a href="#vote">Cast Your Vote</a>
+                    <a href="#program">View Program</a>
                   </Button>
                 </div>
                 <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} className="mt-12 grid gap-5 text-left sm:grid-cols-3">
@@ -373,7 +458,26 @@ export default function ANightInMonteCarloSite() {
                     { icon: MapPin, label: "Venue", value: "Durham Convention Centre" },
                   ].map((item) => (
                     <motion.div key={item.label} variants={fadeUp} transition={{ duration: 0.45 }}>
-                      <InfoPill {...item} />
+                      {item.label === "Venue" ? (
+                        <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+                          <div className="flex items-center gap-2 text-amber-200/70">
+                            <MapPin className="h-4 w-4" />
+                            <span className="text-[10px] uppercase tracking-[0.3em]">{item.label}</span>
+                          </div>
+                          <p className="mt-2 text-sm text-neutral-100 md:text-base">
+                            <a
+                              href="https://maps.app.goo.gl/M1MF951QBjapjHG97"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-inherit no-underline transition hover:text-amber-200"
+                            >
+                              {item.value}
+                            </a>
+                          </p>
+                        </div>
+                      ) : (
+                        <InfoPill {...item} />
+                      )}
                     </motion.div>
                   ))}
                 </motion.div>
@@ -480,6 +584,12 @@ export default function ANightInMonteCarloSite() {
                       >
                         <a href="https://shop.otubitsoc.com">Buy Ticket</a>
                       </Button>
+                      {ticket.featured ? (
+                        <div className="mt-4 inline-flex items-center justify-center gap-2 self-center rounded-full border border-black/20 bg-black/10 px-4 py-2 text-sm font-bold uppercase tracking-[0.28em] text-black/80 shadow-sm">
+                          <span>Few Left</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </div>
+                      ) : null}
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -487,6 +597,8 @@ export default function ANightInMonteCarloSite() {
             </motion.div>
           </div>
         </section>
+
+        <VenueDirectionsSection />
 
         <section id="program" className="mx-auto max-w-7xl px-6 py-20 md:px-10">
           <SectionHeading
@@ -539,44 +651,6 @@ export default function ANightInMonteCarloSite() {
           </div>
         </section>
 
-        {/* <section id="Vote" className="border-y border-white/10 bg-white/[0.03]">
-          <div className="mx-auto max-w-7xl px-6 py-20 md:px-10">
-            <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }} className="grid gap-6 lg:grid-cols-2">
-              <motion.div variants={fadeUp} transition={{ duration: 0.45 }}>
-                <Card className="rounded-[2rem] border-white/10 bg-black/40 text-white">
-                  <CardContent className="p-8">
-                    <div className="flex items-center gap-3 text-amber-300">
-                      <Award className="h-5 w-5" />
-                      <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Awards Voting</p>
-                    </div>
-                    <h3 className="mt-5 text-3xl font-semibold">Cast your vote. Shape the spotlight.</h3>
-                    <p className="mt-4 text-sm leading-7 text-neutral-300">Cast your vote below and recognize the thoese whose leadership, impact, and excellence defined the year across FBIT and Science.</p>
-                    <Button asChild className="mt-6 rounded-2xl bg-amber-300 text-black hover:bg-amber-200">
-                      <a href="#vote">Cast Your Vote</a>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-              <motion.div variants={fadeUp} transition={{ duration: 0.45 }}>
-                <Card className="rounded-[2rem] border-white/10 bg-black/40 text-white">
-                  <CardContent className="p-8">
-                    <div className="flex items-center gap-3 text-amber-300">
-                      <Users className="h-5 w-5" />
-                      <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Year In Review</p>
-                    </div>
-                    <h3 className="mt-5 text-3xl font-semibold">The story behind the celebration.</h3>
-                    <p className="mt-4 text-sm leading-7 text-neutral-300">Explore highlights from the year, key milestones, and reflections from both societies that set the stage for gala night.</p>
-                    <Button asChild className="mt-6 rounded-2xl bg-amber-300 text-black hover:bg-amber-200">
-                      <a href="#presidents-messages">View Year In Reviews</a>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </motion.div>
-          </div>
-        </section> */}
-
-        <AwardsVotingPage />
         <PresidentsMessagesPage />
 
         {/* <section id="gallery" className="border-y border-white/10 bg-white/[0.03]">
@@ -689,14 +763,15 @@ export default function ANightInMonteCarloSite() {
             <div className="mt-4 space-y-2 text-sm text-neutral-300">
               <p className="flex items-center gap-2"><CalendarDays className="h-4 w-4 text-amber-300" /> April 25, 2026</p>
               <p className="flex items-center gap-2"><Clock3 className="h-4 w-4 text-amber-300" /> 6:00 PM – 1:00 AM</p>
-              <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-amber-300" /> Durham Convention Centre</p>
+              <p className="flex items-center gap-2"><MapPin className="h-4 w-4 text-amber-300" /><a href="https://maps.app.goo.gl/M1MF951QBjapjHG97" target="_blank" rel="noopener noreferrer" className="text-inherit no-underline transition hover:text-amber-200">Durham Convention Centre</a></p>
             </div>
           </div>
           <div>
             <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Quick Links</p>
             <div className="mt-4 flex flex-col gap-2 text-sm text-neutral-300">
               <a href="https://shop.otubitsoc.com" className="transition hover:text-amber-200">Buy Tickets</a>
-              <a href="#vote" className="transition hover:text-amber-200">Awards Voting</a>
+              <a href="#venue" className="transition hover:text-amber-200">Directions</a>
+              <a href="#awards" className="transition hover:text-amber-200">Awards</a>
               <a href="#presidents-messages" className="transition hover:text-amber-200">Presidents’ Messages</a>
             </div>
           </div>
