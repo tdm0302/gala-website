@@ -586,7 +586,7 @@ export default function ANightInMonteCarloSite() {
                       </Button>
                       {ticket.featured ? (
                         <div className="mt-4 inline-flex items-center justify-center gap-2 self-center rounded-full border border-black/20 bg-black/10 px-4 py-2 text-sm font-bold uppercase tracking-[0.28em] text-black/80 shadow-sm">
-                          <span>Few Left</span>
+                          <span>A Few Left</span>
                           <ArrowRight className="h-4 w-4" />
                         </div>
                       ) : null}
