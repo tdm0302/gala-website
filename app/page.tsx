@@ -107,10 +107,10 @@ const programSchedule = [
       "Live atmosphere programming and open networking time before dinner service begins.",
   },
   {
-    title: "Dinner Service",
+    title: "Dinner Service & Games",
     time: "7:45 - 9:00",
     description:
-      "Full-course buffet style dinner service featuring the gala menu in a seated setting.",
+      "Full-course buffet style dinner service featuring the gala menu in a seated setting, with interactive games and contests to keep energy high between courses.",
   },
   {
     title: "Awards Presentation & Raffle Draw",
