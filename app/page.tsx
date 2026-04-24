@@ -110,7 +110,7 @@ const programSchedule = [
     title: "Dinner Service",
     time: "7:45 - 9:00",
     description:
-      "Full-course dinner service featuring the gala menu in a formal seated setting.",
+      "Full-course buffet style dinner service featuring the gala menu in a seated setting.",
   },
   {
     title: "Awards Presentation & Raffle Draw",
