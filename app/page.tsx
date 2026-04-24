@@ -165,6 +165,25 @@ const menuCategories = [
   },
 ];
 
+const customDrinks = [
+  {
+    name: "Monte Carlo Royale (Signature Drink)",
+    ingredients: ["Cranberry juice", "Lime juice", "Sparkling water or Perrier"],
+    garnish: ["Lime wheel"],
+    rim: "Regular rim",
+  },
+  {
+    name: "Monaco Sunset",
+    ingredients: ["Orange juice", "Sprite", "Grenadine"],
+    garnish: ["Orange slice", "Cherry"],
+  },
+  {
+    name: "Golden Monaco Fizz",
+    ingredients: ["Pineapple juice", "Ginger ale", "Lemon juice"],
+    garnish: ["Lemon twist", "Mint"],
+  },
+];
+
 const faqs = [
   {
     q: "What is the dress code?",
@@ -754,6 +773,44 @@ export default function ANightInMonteCarloSite() {
                   </Card>
                 </motion.div>
               ))}
+            </motion.div>
+
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5 }} className="mt-8">
+              <Card className="rounded-3xl border-white/12 bg-gradient-to-b from-white/[0.08] to-white/[0.03] text-white shadow-[0_14px_34px_rgba(0,0,0,0.25)]">
+                <CardContent className="p-6 md:p-8">
+                  <p className="text-[10px] uppercase tracking-[0.36em] text-amber-200/80">Custom Drink Menu</p>
+                  <h3 className="mt-3 text-2xl font-semibold text-amber-100 md:text-3xl">Signature Gala Drinks</h3>
+                  <p className="mt-3 text-sm leading-7 text-neutral-300 md:text-base">
+                    Unlimited non-alcoholic drinks and a cash bar are available throughout the night.
+                  </p>
+
+                  <div className="mt-6 grid gap-4 lg:grid-cols-3">
+                    {customDrinks.map((drink, index) => (
+                      <div key={drink.name} className="rounded-2xl border border-white/10 bg-black/25 p-4 md:p-5">
+                        <p className="text-[10px] uppercase tracking-[0.34em] text-amber-200/80">Drink {index + 1}</p>
+                        <h4 className="mt-2 text-lg font-semibold text-white">{drink.name}</h4>
+
+                        <p className="mt-4 text-xs uppercase tracking-[0.28em] text-neutral-400">Ingredients</p>
+                        <ul className="mt-2 space-y-1 text-sm leading-7 text-neutral-200">
+                          {drink.ingredients.map((ingredient) => (
+                            <li key={`${drink.name}-${ingredient}`}>• {ingredient}</li>
+                          ))}
+                        </ul>
+
+                        <p className="mt-4 text-xs uppercase tracking-[0.28em] text-neutral-400">Garnish</p>
+                        <p className="mt-2 text-sm leading-7 text-neutral-200">{drink.garnish.join(", ")}</p>
+
+                        {drink.rim ? (
+                          <>
+                            <p className="mt-4 text-xs uppercase tracking-[0.28em] text-neutral-400">Rim</p>
+                            <p className="mt-2 text-sm leading-7 text-neutral-200">{drink.rim}</p>
+                          </>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </motion.div>
           </div>
         </section>
