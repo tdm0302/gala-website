@@ -93,6 +93,78 @@ const highlights = [
   },
 ];
 
+const programSchedule = [
+  {
+    title: "Cocktail Hour & Welcome Reception",
+    time: "6:00 - 7:00",
+    description:
+      "Guest arrival, reception photos, and a polished welcome with signature non-alcoholic beverages and social mingling.",
+  },
+  {
+    title: "Entertainment & Networking",
+    time: "7:00 - 7:45",
+    description:
+      "Live atmosphere programming and open networking time before dinner service begins.",
+  },
+  {
+    title: "Dinner Service",
+    time: "7:45 - 9:00",
+    description:
+      "Full-course dinner service featuring the gala menu in a formal seated setting.",
+  },
+  {
+    title: "Awards Presentation & Raffle Draw",
+    time: "9:00 - 9:30",
+    description:
+      "Stage recognition for student achievements followed by raffle draws and celebration moments.",
+  },
+  {
+    title: "Live Performance",
+    time: "9:30 - 10:00",
+    description:
+      "Featured live performance segment to transition the evening from ceremony to celebration.",
+  },
+  {
+    title: "After Party & Dancing",
+    time: "10:00 - 1:00",
+    description:
+      "Dance floor, music, social programming, and late-night energy to close out the gala night.",
+  },
+];
+
+const menuCategories = [
+  {
+    title: "Appetizers",
+    items: [
+      "Bruschetta",
+      "Breaded Shrimp",
+      "Chicken Souvlaki Skewers",
+      "Vegetable Spring Rolls",
+      "Oysters",
+    ],
+  },
+  {
+    title: "First Course",
+    items: ["Garden Salad", "Caesar Salad"],
+  },
+  {
+    title: "Main Entree (Served with Sides)",
+    items: ["Chicken Parmesan", "Salmon Fillet", "Eggplant Parmesan"],
+  },
+  {
+    title: "Sides",
+    items: ["Penne with Rose Sauce", "Steamed Vegetables", "Roasted Potatoes"],
+  },
+  {
+    title: "Dessert",
+    items: ["Assorted Pastries", "Assorted Cakes", "Fresh Fruit Tray"],
+  },
+  {
+    title: "Late Night Station",
+    items: ["Poutine"],
+  },
+];
+
 const faqs = [
   {
     q: "What is the dress code?",
@@ -117,6 +189,14 @@ const faqs = [
   {
     q: "Will there be food?",
     a: "Yes. Guests will enjoy a buffet dinner, signature drinks, and a late-night snack service.",
+  },
+  {
+    q: "Is the food marked for allergies?",
+    a: "Yes. Food stations are clearly marked for allergies, and all food served is halal.",
+  },
+  {
+    q: "Will there be drinks?",
+    a: "Yes. There will be unlimited non-alcoholic drinks throughout the night, along with a cash bar for additional beverage purchases. Stay tuned for the customized drink menu.",
   },
   {
     q: "How do I get there?",
@@ -419,6 +499,7 @@ export default function ANightInMonteCarloSite() {
             <a href="#tickets" className="transition hover:text-amber-200">Tickets</a>
             <a href="#venue" className="transition hover:text-amber-200">Directions</a>
             <a href="#program" className="transition hover:text-amber-200">Program</a>
+            <a href="#menu" className="transition hover:text-amber-200">Menu</a>
             <a href="#awards" className="transition hover:text-amber-200">Awards</a>
             <a href="#faq" className="transition hover:text-amber-200">FAQ</a>
           </nav>
@@ -586,7 +667,7 @@ export default function ANightInMonteCarloSite() {
                       </Button>
                       {ticket.featured ? (
                         <div className="mt-4 inline-flex items-center justify-center gap-2 self-center rounded-full border border-black/20 bg-black/10 px-4 py-2 text-sm font-bold uppercase tracking-[0.28em] text-black/80 shadow-sm">
-                          <span>A Few Left</span>
+                          <span>Few Left</span>
                           <ArrowRight className="h-4 w-4" />
                         </div>
                       ) : null}
@@ -612,12 +693,69 @@ export default function ANightInMonteCarloSite() {
           />
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.45 }} className="mt-12">
             <Card className="rounded-3xl border-white/10 bg-white/5 text-white">
-              <CardContent className="p-10 text-center">
-                <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Program Update</p>
-                <h3 className="mt-4 text-3xl font-semibold text-amber-300">Schedule TBD</h3>
+              <CardContent className="p-8 md:p-10">
+                <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Evening Schedule</p>
+                <div className="mt-6 space-y-3">
+                  {programSchedule.map((item) => (
+                    <details key={item.title} className="group rounded-2xl border border-white/10 bg-black/30 px-4 py-4 md:px-5">
+                      <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
+                        <p className="text-sm font-medium text-neutral-100 md:text-base">{item.title}</p>
+                        <div className="flex items-center gap-3">
+                          <span className="inline-flex w-fit rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-amber-200 md:text-sm">
+                            {item.time}
+                          </span>
+                          <ChevronDown className="h-4 w-4 text-neutral-400 transition group-open:rotate-180" />
+                        </div>
+                      </summary>
+                      <p className="mt-3 border-t border-white/10 pt-3 text-sm leading-7 text-neutral-300">
+                        {item.description}
+                      </p>
+                    </details>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </motion.div>
+        </section>
+
+        <section id="menu" className="border-y border-white/10 bg-white/[0.03]">
+          <div className="mx-auto max-w-7xl px-6 py-20 md:px-10">
+            <SectionHeading
+              eyebrow="Menu"
+              title={
+                <>
+                  A Curated Gala <span className="bg-gradient-to-b from-amber-100 via-amber-200 to-amber-400 bg-clip-text text-transparent">Dining</span> Experience.
+                </>
+              }
+              text="Explore the full night menu, from passed appetizers and plated courses to dessert and late-night comfort food."
+            />
+            <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {menuCategories.map((category) => (
+                <motion.div key={category.title} variants={fadeUp} transition={{ duration: 0.45 }}>
+                  <Card className="h-full overflow-hidden rounded-3xl border-white/12 bg-gradient-to-b from-white/[0.07] to-white/[0.03] text-white shadow-[0_14px_34px_rgba(0,0,0,0.25)]">
+                    <CardContent className="p-0">
+                      <div className="border-b border-white/10 bg-black/25 px-5 py-4">
+                        <p className="text-[10px] uppercase tracking-[0.36em] text-amber-200/80">Course</p>
+                        <h3 className="mt-2 text-xl font-semibold text-amber-100">{category.title}</h3>
+                      </div>
+                      <ul className="p-3">
+                        {category.items.map((item, index) => (
+                          <li key={`${category.title}-${item}`}>
+                            <div className="mb-2 flex items-center gap-3 rounded-xl border border-white/10 bg-black/25 px-3 py-2.5 last:mb-0">
+                              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-amber-300/35 text-[11px] font-medium text-amber-200">
+                                {index + 1}
+                              </span>
+                              <span className="text-sm leading-6 text-neutral-100">{item}</span>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
         </section>
 
         <section id="awards" className="mx-auto max-w-7xl px-6 py-20 md:px-10">
