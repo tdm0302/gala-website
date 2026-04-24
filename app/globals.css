@@ -150,3 +150,12 @@
     scroll-behavior: auto;
   }
 }
+
+@keyframes gold-confetti-fall {
+  0% {
+    transform: translate3d(0, -12vh, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate3d(var(--confetti-drift, 0px), 112vh, 0) rotate(640deg);
+  }
+}

@@ -14,13 +14,41 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-const galaCountdownTarget = new Date(2026, 3, 25, 18, 0, 0);
 const venueName = "Durham Convention Centre";
 const venueAddress = "630 Beck Crescent, Ajax, Ontario";
 const venueSearchQuery = "Durham Convention Centre Ajax Ontario";
 const venueLatitude = "43.945062";
 const venueLongitude = "-78.895891";
 const venueDirectionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(venueSearchQuery)}&travelmode=driving`;
+
+type ConfettiPiece = {
+  id: number;
+  left: number;
+  size: number;
+  duration: number;
+  delay: number;
+  drift: number;
+  opacity: number;
+  color: string;
+};
+
+const CONFETTI_SPAWN_WINDOW_SECONDS = 5;
+const CONFETTI_PIECE_COUNT = 320;
+
+function createConfettiPieces(count: number): ConfettiPiece[] {
+  const confettiPalette = ["#f7d25c", "#f0c341", "#e8b92b", "#ffe7a3", "#d4af37"];
+
+  return Array.from({ length: count }, (_, index) => ({
+    id: index,
+    left: Math.random() * 100,
+    size: 5 + Math.random() * 6,
+    duration: 3.2 + Math.random() * 4,
+    delay: Math.random() * CONFETTI_SPAWN_WINDOW_SECONDS,
+    drift: -90 + Math.random() * 180,
+    opacity: 0.5 + Math.random() * 0.5,
+    color: confettiPalette[Math.floor(Math.random() * confettiPalette.length)],
+  }));
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -160,53 +188,6 @@ function SectionHeading({ eyebrow, title, text }: { eyebrow: string; title: Reac
   );
 }
 
-function InfoPill({ icon: Icon, label, value }: { icon: React.ComponentType<any>; label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-      <div className="flex items-center gap-2 text-amber-200/70">
-        <Icon className="h-4 w-4" />
-        <span className="text-[10px] uppercase tracking-[0.3em]">{label}</span>
-      </div>
-      <p className="mt-2 text-sm text-neutral-100 md:text-base">{value}</p>
-    </div>
-  );
-}
-
-function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = React.useState(() => getTimeLeft());
-
-  React.useEffect(() => {
-    const timer = window.setInterval(() => {
-      setTimeLeft(getTimeLeft());
-    }, 1000);
-
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const timeBlocks = [
-    { label: "Days", value: timeLeft.days },
-    { label: "Hours", value: timeLeft.hours },
-    { label: "Mins", value: timeLeft.minutes },
-    { label: "Secs", value: timeLeft.seconds },
-  ];
-
-  return (
-    <div className="mx-auto mt-8 max-w-4xl">
-      <p className="text-sm uppercase tracking-[0.35em] text-amber-200/80 md:text-base">
-        The Biggest Night in Ontario Tech History Starts In...
-      </p>
-      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {timeBlocks.map((block) => (
-          <div key={block.label} className="rounded-3xl border border-white/10 bg-white/5 px-4 py-5 text-center backdrop-blur-md">
-            <p className="text-3xl font-semibold text-amber-300 md:text-4xl">{formatCountdownValue(block.value)}</p>
-            <p className="mt-2 text-[10px] uppercase tracking-[0.35em] text-neutral-400">{block.label}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function VenueDirectionsSection() {
   const [startingAddress, setStartingAddress] = React.useState("");
 
@@ -330,22 +311,6 @@ function VenueDirectionsSection() {
   );
 }
 
-function getTimeLeft() {
-  const now = new Date().getTime();
-  const distance = Math.max(galaCountdownTarget.getTime() - now, 0);
-
-  return {
-    days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-    hours: Math.floor((distance / (1000 * 60 * 60)) % 24),
-    minutes: Math.floor((distance / 1000 / 60) % 60),
-    seconds: Math.floor((distance / 1000) % 60),
-  };
-}
-
-function formatCountdownValue(value: number) {
-  return String(value).padStart(2, "0");
-}
-
 function PresidentsMessagesPage() {
   const placeholders = [
     {
@@ -397,8 +362,47 @@ function PresidentsMessagesPage() {
 }
 
 export default function ANightInMonteCarloSite() {
+  const [isMounted, setIsMounted] = React.useState(false);
+  const [confettiPieces, setConfettiPieces] = React.useState<ConfettiPiece[]>([]);
+  const [showConfetti, setShowConfetti] = React.useState(true);
+
+  React.useEffect(() => {
+    setIsMounted(true);
+    const generatedPieces = createConfettiPieces(CONFETTI_PIECE_COUNT);
+    setConfettiPieces(generatedPieces);
+
+    const timeUntilLastPieceFallsMs =
+      Math.max(...generatedPieces.map((piece) => piece.delay + piece.duration), 0) * 1000 + 400;
+
+    const hideConfettiTimer = window.setTimeout(() => {
+      setShowConfetti(false);
+    }, timeUntilLastPieceFallsMs);
+
+    return () => window.clearTimeout(hideConfettiTimer);
+  }, []);
+
   return (
     <div id="top" className="min-h-screen bg-[#060606] text-white">
+      {isMounted && showConfetti ? (
+        <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[60] overflow-hidden">
+          {confettiPieces.map((piece) => (
+            <span
+              key={piece.id}
+              className="absolute -top-[12%] block rounded-sm"
+              style={{
+                left: `${piece.left}%`,
+                width: `${piece.size}px`,
+                height: `${piece.size * 0.56}px`,
+                opacity: piece.opacity,
+                backgroundColor: piece.color,
+                boxShadow: "0 0 12px rgba(245, 200, 74, 0.28)",
+                animation: `gold-confetti-fall ${piece.duration}s linear ${piece.delay}s 1 both`,
+                ["--confetti-drift" as string]: `${piece.drift}px`,
+              }}
+            />
+          ))}
+        </div>
+      ) : null}
       <div className="fixed inset-0 -z-20 bg-[radial-gradient(circle_at_top,_rgba(212,175,55,0.16),_transparent_28%),radial-gradient(circle_at_85%_20%,_rgba(255,255,255,0.06),_transparent_18%),linear-gradient(to_bottom,#090909,#050505,#090909)]" />
       <div className="fixed inset-0 -z-10 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] [background-size:56px_56px]" />
 
@@ -423,7 +427,7 @@ export default function ANightInMonteCarloSite() {
             <a href="#faq" className="transition hover:text-amber-200">FAQ</a>
           </nav>
           <Button asChild className="rounded-xl bg-amber-300 px-8 py-6 text-base text-black hover:bg-amber-200">
-            <a href="https://shop.otubitsoc.com">Buy Tickets</a>
+            <a href="#menu">View Menu</a>
           </Button>
         </div>
       </header>
@@ -433,7 +437,7 @@ export default function ANightInMonteCarloSite() {
           <div className="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28">
             <motion.div variants={stagger} initial="hidden" animate="visible" className="mx-auto max-w-5xl">
               <motion.div variants={fadeUp} transition={{ duration: 0.55 }} className="text-center">
-                <p className="text-xl font-light italic text-amber-100/90 md:text-2xl">Ontario Tech’s Luxury End-of-Year Gala</p>
+                <p className="text-xl font-light italic text-amber-100/90 md:text-2xl">Welcome to</p>
                 <h1 className="mt-4 overflow-visible pb-[0.14em] text-4xl font-semibold sm:text-6xl md:pb-[0.18em] md:text-8xl">
                   <span className="font-slight block overflow-visible bg-gradient-to-b from-white via-amber-50 to-amber-200 bg-clip-text px-2 pb-[0.2em] pt-[0.2em] text-[1.05em] leading-[1.34] text-transparent sm:text-[1.08em] md:text-[1.12em]">
                     A Night in
@@ -442,50 +446,22 @@ export default function ANightInMonteCarloSite() {
                     Monte Carlo
                   </span>
                 </h1>
-                <CountdownTimer />
+                <p className="mx-auto italic mt-5 max-w-3xl text-base leading-8 text-neutral-300 md:text-lg">
+                  An evening of elegance, celebration, and unforgettable moments awaits. Explore tonight’s program and menu below.
+                </p>
                 <div className="mt-10 flex flex-wrap justify-center gap-4">
                   <Button asChild className="rounded-2xl bg-amber-300 px-6 py-6 text-sm uppercase tracking-[0.24em] text-black hover:bg-amber-200">
-                    <a href="https://shop.otubitsoc.com">Buy Tickets</a>
-                  </Button>
-                  <Button asChild variant="outline" className="rounded-2xl border-white/15 bg-white/5 px-6 py-6 text-sm uppercase tracking-[0.24em] text-white hover:bg-white/10 hover:text-white">
                     <a href="#program">View Program</a>
                   </Button>
+                  <Button asChild variant="outline" className="rounded-2xl border-white/15 bg-white/5 px-6 py-6 text-sm uppercase tracking-[0.24em] text-white hover:bg-white/10 hover:text-white">
+                    <a href="#menu">View Menu</a>
+                  </Button>
                 </div>
-                <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} className="mt-12 grid gap-5 text-left sm:grid-cols-3">
-                  {[
-                    { icon: CalendarDays, label: "Date", value: "April 25, 2026" },
-                    { icon: Clock3, label: "Time", value: "Doors 6:00 PM · Ends 1:00 AM" },
-                    { icon: MapPin, label: "Venue", value: "Durham Convention Centre" },
-                  ].map((item) => (
-                    <motion.div key={item.label} variants={fadeUp} transition={{ duration: 0.45 }}>
-                      {item.label === "Venue" ? (
-                        <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-                          <div className="flex items-center gap-2 text-amber-200/70">
-                            <MapPin className="h-4 w-4" />
-                            <span className="text-[10px] uppercase tracking-[0.3em]">{item.label}</span>
-                          </div>
-                          <p className="mt-2 text-sm text-neutral-100 md:text-base">
-                            <a
-                              href="https://maps.app.goo.gl/M1MF951QBjapjHG97"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-inherit no-underline transition hover:text-amber-200"
-                            >
-                              {item.value}
-                            </a>
-                          </p>
-                        </div>
-                      ) : (
-                        <InfoPill {...item} />
-                      )}
-                    </motion.div>
-                  ))}
-                </motion.div>
               </motion.div>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.5 }} className="mt-12 flex justify-center">
-              <a href="#about" className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.3em] text-neutral-400 hover:text-amber-200">
+              <a href="#stats" className="inline-flex items-center gap-2 text-sm uppercase tracking-[0.3em] text-neutral-400 hover:text-amber-200">
                 Scroll
                 <ChevronDown className="h-4 w-4" />
               </a>
@@ -493,7 +469,7 @@ export default function ANightInMonteCarloSite() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-6 py-10 md:px-10">
+        <section id="stats"className="mx-auto max-w-7xl px-6 py-10 md:px-10">
           <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.25 }} className="grid gap-6 md:grid-cols-4">
             {[
               ["350+", "Guests"],
@@ -586,7 +562,7 @@ export default function ANightInMonteCarloSite() {
                       </Button>
                       {ticket.featured ? (
                         <div className="mt-4 inline-flex items-center justify-center gap-2 self-center rounded-full border border-black/20 bg-black/10 px-4 py-2 text-sm font-bold uppercase tracking-[0.28em] text-black/80 shadow-sm">
-                          <span>A Few Left</span>
+                          <span>Few Left</span>
                           <ArrowRight className="h-4 w-4" />
                         </div>
                       ) : null}
@@ -615,6 +591,26 @@ export default function ANightInMonteCarloSite() {
               <CardContent className="p-10 text-center">
                 <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Program Update</p>
                 <h3 className="mt-4 text-3xl font-semibold text-amber-300">Schedule TBD</h3>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </section>
+
+        <section id="menu" className="mx-auto max-w-7xl px-6 py-20 md:px-10">
+          <SectionHeading
+            eyebrow="Menu"
+            title={
+              <>
+                A Curated Gala <span className="bg-gradient-to-b from-amber-100 via-amber-200 to-amber-400 bg-clip-text text-transparent">Dining</span> Experience.
+              </>
+            }
+            text="The full day-of menu will be published here, including buffet highlights and late-night offerings."
+          />
+          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.45 }} className="mt-12">
+            <Card className="rounded-3xl border-white/10 bg-white/5 text-white">
+              <CardContent className="p-10 text-center">
+                <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Menu Update</p>
+                <h3 className="mt-4 text-3xl font-semibold text-amber-300">Menu Coming Soon</h3>
               </CardContent>
             </Card>
           </motion.div>
