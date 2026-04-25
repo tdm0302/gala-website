@@ -259,7 +259,7 @@ function SectionHeading({ eyebrow, title, text }: { eyebrow: string; title: Reac
   );
 }
 
-function InfoPill({ icon: Icon, label, value }: { icon: React.ComponentType<any>; label: string; value: string }) {
+function InfoPill({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
       <div className="flex items-center gap-2 text-amber-200/70">
@@ -272,21 +272,24 @@ function InfoPill({ icon: Icon, label, value }: { icon: React.ComponentType<any>
 }
 
 function CountdownTimer() {
-  const [timeLeft, setTimeLeft] = React.useState(() => getTimeLeft());
+  const [timeLeft, setTimeLeft] = React.useState<ReturnType<typeof getTimeLeft> | null>(null);
 
   React.useEffect(() => {
-    const timer = window.setInterval(() => {
+    function updateTimeLeft() {
       setTimeLeft(getTimeLeft());
-    }, 1000);
+    }
+
+    updateTimeLeft();
+    const timer = window.setInterval(updateTimeLeft, 1000);
 
     return () => window.clearInterval(timer);
   }, []);
 
   const timeBlocks = [
-    { label: "Days", value: timeLeft.days },
-    { label: "Hours", value: timeLeft.hours },
-    { label: "Mins", value: timeLeft.minutes },
-    { label: "Secs", value: timeLeft.seconds },
+    { label: "Days", value: timeLeft?.days },
+    { label: "Hours", value: timeLeft?.hours },
+    { label: "Mins", value: timeLeft?.minutes },
+    { label: "Secs", value: timeLeft?.seconds },
   ];
 
   return (
@@ -297,7 +300,7 @@ function CountdownTimer() {
       <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {timeBlocks.map((block) => (
           <div key={block.label} className="rounded-3xl border border-white/10 bg-white/5 px-4 py-5 text-center backdrop-blur-md">
-            <p className="text-3xl font-semibold text-amber-300 md:text-4xl">{formatCountdownValue(block.value)}</p>
+            <p className="text-3xl font-semibold text-amber-300 md:text-4xl">{block.value === undefined ? "--" : formatCountdownValue(block.value)}</p>
             <p className="mt-2 text-[10px] uppercase tracking-[0.35em] text-neutral-400">{block.label}</p>
           </div>
         ))}
@@ -619,7 +622,7 @@ export default function ANightInMonteCarloSite() {
               eyebrow="About the Event"
               title={
                 <>
-                  More than just a gala. It's a{" "}
+                  More than just a gala. It&apos;s a{" "}
                   <span className="bg-gradient-to-b from-amber-100 via-amber-200 to-amber-400 bg-clip-text text-transparent">
                     Cinematic
                   </span>{" "}
