@@ -8,7 +8,6 @@ import {
   Clock3,
   MapPin,
   ChevronDown,
-  ArrowRight,
   Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -64,40 +63,6 @@ const stagger = {
   },
 };
 
-const tickets = [
-  {
-    title: "FBIT & FSc Student",
-    price: "$45",
-    description:
-      "For undergraduate and graduate students in the Faculty of Business & IT and Faculty of Science.",
-  },
-  {
-    title: "General Student",
-    price: "$50",
-    description:
-      "For undergraduate and graduate students from all other faculties at Ontario Tech.",
-  },
-  {
-    title: "Alumni",
-    price: "$55",
-    description:
-      "For all Ontario Tech alumni attending the gala.",
-  },
-  {
-    title: "External Guest",
-    price: "$65",
-    description:
-      "For guests and students from outside Ontario Tech.",
-  },
-  {
-    title: "VIP Table Ticket (10 Seats)",
-    price: "$450",
-    description:
-      "Reserved VIP 10-seat table seating, perfect for friend groups, mixed guests, and those bringing external +1s.",
-    featured: true,
-  },
-];
-
 const highlights = [
   {
     title: "Cocktail Reception",
@@ -121,6 +86,97 @@ const highlights = [
   },
 ];
 
+const programSchedule = [
+  {
+    title: "Cocktail Hour & Welcome Reception",
+    time: "6:00 - 7:00",
+    description:
+      "Guest arrival, reception photos, and a polished welcome with signature non-alcoholic beverages and social mingling.",
+  },
+  {
+    title: "Entertainment & Networking",
+    time: "7:00 - 7:45",
+    description:
+      "Live atmosphere programming and open networking time before dinner service begins.",
+  },
+  {
+    title: "Dinner Service & Games",
+    time: "7:45 - 9:00",
+    description:
+      "Full-course buffet style dinner service featuring the gala menu in a seated setting, with interactive games and contests to keep energy high between courses.",
+  },
+  {
+    title: "Awards Presentation & Raffle Draw",
+    time: "9:00 - 9:30",
+    description:
+      "Stage recognition for student achievements followed by raffle draws and celebration moments.",
+  },
+  {
+    title: "Live Performance",
+    time: "9:30 - 10:00",
+    description:
+      "Featured live performance segment to transition the evening from ceremony to celebration.",
+  },
+  {
+    title: "After Party & Dancing",
+    time: "10:00 - 1:00",
+    description:
+      "Dance floor, music, social programming, and late-night energy to close out the gala night.",
+  },
+];
+
+const menuCategories = [
+  {
+    title: "Appetizers",
+    items: [
+      "Bruschetta",
+      "Breaded Shrimp",
+      "Chicken Souvlaki Skewers",
+      "Vegetable Spring Rolls",
+      "Oysters",
+    ],
+  },
+  {
+    title: "First Course",
+    items: ["Garden Salad", "Caesar Salad"],
+  },
+  {
+    title: "Main Entree (Served with Sides)",
+    items: ["Chicken Parmesan", "Salmon Fillet", "Eggplant Parmesan"],
+  },
+  {
+    title: "Sides",
+    items: ["Penne with Rose Sauce", "Steamed Vegetables", "Roasted Potatoes"],
+  },
+  {
+    title: "Dessert",
+    items: ["Assorted Pastries", "Assorted Cakes", "Fresh Fruit Tray"],
+  },
+  {
+    title: "Late Night Station",
+    items: ["Poutine"],
+  },
+];
+
+const customDrinks = [
+  {
+    name: "Monte Carlo Royale (Signature Drink)",
+    ingredients: ["Cranberry juice", "Lime juice", "Sparkling water or Perrier"],
+    garnish: ["Lime wheel"],
+    rim: "Regular rim",
+  },
+  {
+    name: "Monaco Sunset",
+    ingredients: ["Orange juice", "Sprite", "Grenadine"],
+    garnish: ["Orange slice", "Cherry"],
+  },
+  {
+    name: "Golden Monaco Fizz",
+    ingredients: ["Pineapple juice", "Ginger ale", "Lemon juice"],
+    garnish: ["Lemon twist", "Mint"],
+  },
+];
+
 const faqs = [
   {
     q: "What is the dress code?",
@@ -135,8 +191,8 @@ const faqs = [
     a: "Doors open at 6:00 PM and the gala concludes at 1:00 AM.",
   },
   {
-    q: "Where do I buy tickets?",
-    a: "Tickets are available online through shop.otubitsoc.com.",
+    q: "Are tickets still available?",
+    a: "Ticket sales are now closed.",
   },
   {
     q: "Who can attend?",
@@ -420,9 +476,9 @@ export default function ANightInMonteCarloSite() {
           </a>
           <nav className="hidden items-center gap-6 text-md text-neutral-300 lg:flex">
             <a href="#about" className="transition hover:text-amber-200">About</a>
-            <a href="#tickets" className="transition hover:text-amber-200">Tickets</a>
             <a href="#venue" className="transition hover:text-amber-200">Directions</a>
             <a href="#program" className="transition hover:text-amber-200">Program</a>
+            <a href="/seating-chart" className="transition hover:text-amber-200">Seating Chart</a>
             <a href="#awards" className="transition hover:text-amber-200">Awards</a>
             <a href="#faq" className="transition hover:text-amber-200">FAQ</a>
           </nav>
@@ -524,56 +580,6 @@ export default function ANightInMonteCarloSite() {
           </div>
         </section>
 
-        <section id="tickets" className="border-y border-white/10 bg-white/[0.03]">
-          <div className="mx-auto max-w-7xl px-6 py-20 md:px-10">
-            <div className="mb-10 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-              <SectionHeading eyebrow="Tickets" title="Choose the Right Ticket for Your Night." text="All ticket holders receive access to A Night in Monte Carlo, including entry, formal programming, dining, and the gala experience." />
-              <a href="https://shop.otubitsoc.com" className="text-sm uppercase tracking-[0.3em] text-amber-300 hover:text-amber-200">shop.otubitsoc.com</a>
-            </div>
-            <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.15 }} className="grid gap-6 md:grid-cols-2 xl:grid-cols-5">
-              {tickets.map((ticket) => (
-                <motion.div key={ticket.title} variants={fadeUp} transition={{ duration: 0.45 }}>
-                  <Card
-                    className={`group relative h-full rounded-[2rem] border transition hover:-translate-y-1 ${
-                      ticket.featured
-                        ? "border-amber-200/70 bg-gradient-to-b from-amber-200 via-amber-300 to-amber-400 text-black shadow-[0_0_0_1px_rgba(255,214,102,0.3),0_24px_45px_rgba(0,0,0,0.35)] xl:-translate-y-2"
-                        : "border-white/10 bg-black/40 text-white hover:border-amber-300/30 hover:bg-black/60"
-                    }`}
-                  >
-                    {ticket.featured ? (
-                      <span className="absolute right-5 top-5 z-10 rounded-full border border-black/20 bg-black/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-black/80">
-                        Best Value
-                      </span>
-                    ) : null}
-                    <CardContent className="flex h-full flex-col p-6">
-                      <div className="flex items-start gap-3">
-                        <p className={`text-[10px] uppercase tracking-[0.35em] ${ticket.featured ? "text-black/70" : "text-amber-200/70"}`}>A Night in Monte Carlo</p>
-                      </div>
-                      <h3 className="mt-4 text-2xl font-medium">{ticket.title}</h3>
-                      <p className={`mt-5 text-5xl font-semibold ${ticket.featured ? "text-black" : "text-amber-300"}`}>{ticket.price}</p>
-                      <p className={`mt-5 flex-1 text-sm leading-7 ${ticket.featured ? "text-black/85" : "text-neutral-300"}`}>{ticket.description}</p>
-                      <Button
-                        asChild
-                        className={`mt-8 rounded-3xl ${
-                          ticket.featured ? "bg-black text-amber-200 hover:bg-black/90" : "bg-amber-300 text-black hover:bg-amber-200"
-                        }`}
-                      >
-                        <a href="https://shop.otubitsoc.com">Buy Ticket</a>
-                      </Button>
-                      {ticket.featured ? (
-                        <div className="mt-4 inline-flex items-center justify-center gap-2 self-center rounded-full border border-black/20 bg-black/10 px-4 py-2 text-sm font-bold uppercase tracking-[0.28em] text-black/80 shadow-sm">
-                          <span>Few Left</span>
-                          <ArrowRight className="h-4 w-4" />
-                        </div>
-                      ) : null}
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </section>
-
         <VenueDirectionsSection />
 
         <section id="program" className="mx-auto max-w-7xl px-6 py-20 md:px-10">
@@ -588,32 +594,107 @@ export default function ANightInMonteCarloSite() {
           />
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.45 }} className="mt-12">
             <Card className="rounded-3xl border-white/10 bg-white/5 text-white">
-              <CardContent className="p-10 text-center">
-                <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Program Update</p>
-                <h3 className="mt-4 text-3xl font-semibold text-amber-300">Schedule TBD</h3>
+              <CardContent className="p-8 md:p-10">
+                <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Evening Schedule</p>
+                <div className="mt-6 space-y-3">
+                  {programSchedule.map((item) => (
+                    <details key={item.title} className="group rounded-2xl border border-white/10 bg-black/30 px-4 py-4 md:px-5">
+                      <summary className="flex cursor-pointer list-none items-center justify-between gap-3">
+                        <p className="text-sm font-medium text-neutral-100 md:text-base">{item.title}</p>
+                        <div className="flex items-center gap-3">
+                          <span className="inline-flex w-fit rounded-full border border-amber-300/30 bg-amber-300/10 px-3 py-1 text-xs font-semibold tracking-[0.08em] text-amber-200 md:text-sm">
+                            {item.time}
+                          </span>
+                          <ChevronDown className="h-4 w-4 text-neutral-400 transition group-open:rotate-180" />
+                        </div>
+                      </summary>
+                      <p className="mt-3 border-t border-white/10 pt-3 text-sm leading-7 text-neutral-300">
+                        {item.description}
+                      </p>
+                    </details>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </motion.div>
         </section>
 
-        <section id="menu" className="mx-auto max-w-7xl px-6 py-20 md:px-10">
-          <SectionHeading
-            eyebrow="Menu"
-            title={
-              <>
-                A Curated Gala <span className="bg-gradient-to-b from-amber-100 via-amber-200 to-amber-400 bg-clip-text text-transparent">Dining</span> Experience.
-              </>
-            }
-            text="The full day-of menu will be published here, including buffet highlights and late-night offerings."
-          />
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} transition={{ duration: 0.45 }} className="mt-12">
-            <Card className="rounded-3xl border-white/10 bg-white/5 text-white">
-              <CardContent className="p-10 text-center">
-                <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Menu Update</p>
-                <h3 className="mt-4 text-3xl font-semibold text-amber-300">Menu Coming Soon</h3>
-              </CardContent>
-            </Card>
-          </motion.div>
+        <section id="menu" className="border-y border-white/10 bg-white/[0.03]">
+          <div className="mx-auto max-w-7xl px-6 py-20 md:px-10">
+            <SectionHeading
+              eyebrow="Buffet Style Menu"
+              title={
+                <>
+                  A Curated Gala <span className="bg-gradient-to-b from-amber-100 via-amber-200 to-amber-400 bg-clip-text text-transparent">Dining</span> Experience.
+                </>
+              }
+              text="Explore the full night menu, from passed appetizers and plated courses to dessert and late-night comfort food."
+            />
+            <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} className="mt-12 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {menuCategories.map((category) => (
+                <motion.div key={category.title} variants={fadeUp} transition={{ duration: 0.45 }}>
+                  <Card className="h-full overflow-hidden rounded-3xl border-white/12 bg-gradient-to-b from-white/[0.07] to-white/[0.03] text-white shadow-[0_14px_34px_rgba(0,0,0,0.25)]">
+                    <CardContent className="p-0">
+                      <div className="border-b border-white/10 bg-black/25 px-5 py-4">
+                        <p className="text-[10px] uppercase tracking-[0.36em] text-amber-200/80">Course</p>
+                        <h3 className="mt-2 text-xl font-semibold text-amber-100">{category.title}</h3>
+                      </div>
+                      <ul className="p-3">
+                        {category.items.map((item, index) => (
+                          <li key={`${category.title}-${item}`}>
+                            <div className="mb-2 flex items-center gap-3 rounded-xl border border-white/10 bg-black/25 px-3 py-2.5 last:mb-0">
+                              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-amber-300/35 text-[11px] font-medium text-amber-200">
+                                {index + 1}
+                              </span>
+                              <span className="text-sm leading-6 text-neutral-100">{item}</span>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5 }} className="mt-8">
+              <Card className="rounded-3xl border-white/12 bg-gradient-to-b from-white/[0.08] to-white/[0.03] text-white shadow-[0_14px_34px_rgba(0,0,0,0.25)]">
+                <CardContent className="p-6 md:p-8">
+                  <p className="text-[10px] uppercase tracking-[0.36em] text-amber-200/80">Custom Drink Menu</p>
+                  <h3 className="mt-3 text-2xl font-semibold text-amber-100 md:text-3xl">Signature Gala Drinks</h3>
+                  <p className="mt-3 text-sm leading-7 text-neutral-300 md:text-base">
+                    Unlimited non-alcoholic drinks and a cash bar are available throughout the night.
+                  </p>
+
+                  <div className="mt-6 grid gap-4 lg:grid-cols-3">
+                    {customDrinks.map((drink, index) => (
+                      <div key={drink.name} className="rounded-2xl border border-white/10 bg-black/25 p-4 md:p-5">
+                        <p className="text-[10px] uppercase tracking-[0.34em] text-amber-200/80">Drink {index + 1}</p>
+                        <h4 className="mt-2 text-lg font-semibold text-white">{drink.name}</h4>
+
+                        <p className="mt-4 text-xs uppercase tracking-[0.28em] text-neutral-400">Ingredients</p>
+                        <ul className="mt-2 space-y-1 text-sm leading-7 text-neutral-200">
+                          {drink.ingredients.map((ingredient) => (
+                            <li key={`${drink.name}-${ingredient}`}>• {ingredient}</li>
+                          ))}
+                        </ul>
+
+                        <p className="mt-4 text-xs uppercase tracking-[0.28em] text-neutral-400">Garnish</p>
+                        <p className="mt-2 text-sm leading-7 text-neutral-200">{drink.garnish.join(", ")}</p>
+
+                        {drink.rim ? (
+                          <>
+                            <p className="mt-4 text-xs uppercase tracking-[0.28em] text-neutral-400">Rim</p>
+                            <p className="mt-2 text-sm leading-7 text-neutral-200">{drink.rim}</p>
+                          </>
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
         </section>
 
         <section id="awards" className="mx-auto max-w-7xl px-6 py-20 md:px-10">
@@ -717,27 +798,6 @@ export default function ANightInMonteCarloSite() {
           </motion.div>
         </section>
 
-        <section className="mx-auto max-w-7xl px-6 pb-24 md:px-10">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.55 }}>
-            <Card className="rounded-[2rem] border-amber-300/20 bg-gradient-to-r from-amber-300/10 via-white/5 to-amber-300/10 text-white">
-              <CardContent className="flex flex-col gap-6 p-8 md:flex-row md:items-end md:justify-between md:p-12">
-                <div className="max-w-2xl">
-                  <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Reserve Your Spot</p>
-                  <h2 className="mt-4 text-4xl font-semibold md:text-5xl">Join Ontario Tech’s Most Elegant Night of the Year.</h2>
-                  <p className="mt-4 text-base leading-8 text-neutral-300">Buy tickets now, plan your look, and get ready for a fully designed gala experience built to replace the usual slideshow with something far more memorable.</p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <Button asChild className="rounded-2xl bg-amber-300 px-6 py-6 text-sm uppercase tracking-[0.24em] text-black hover:bg-amber-200">
-                    <a href="https://shop.otubitsoc.com">Buy Tickets Today</a>
-                  </Button>
-                  <Button asChild variant="outline" className="rounded-2xl border-white/15 bg-white/5 px-6 py-6 text-sm uppercase tracking-[0.24em] text-white hover:bg-white/10 hover:text-white">
-                    <a href="#tickets">View Ticket Types</a>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </section>
       </main>
 
       <footer className="border-t border-white/10 bg-black/40">
@@ -765,7 +825,8 @@ export default function ANightInMonteCarloSite() {
           <div>
             <p className="text-xs uppercase tracking-[0.35em] text-amber-200/70">Quick Links</p>
             <div className="mt-4 flex flex-col gap-2 text-sm text-neutral-300">
-              <a href="https://shop.otubitsoc.com" className="transition hover:text-amber-200">Buy Tickets</a>
+              <a href="#program" className="transition hover:text-amber-200">Program</a>
+              <a href="/seating-chart" className="transition hover:text-amber-200">Seating Chart</a>
               <a href="#venue" className="transition hover:text-amber-200">Directions</a>
               <a href="#awards" className="transition hover:text-amber-200">Awards</a>
               <a href="#presidents-messages" className="transition hover:text-amber-200">Presidents’ Messages</a>
